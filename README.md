@@ -1,4 +1,4 @@
-# claude-skills
+# skill-issue
 
 Reusable [Claude Code](https://claude.ai/code) skills, hooks, and configs for developers.
 
@@ -6,7 +6,7 @@ Reusable [Claude Code](https://claude.ai/code) skills, hooks, and configs for de
 
 ```bash
 # Clone the repo
-git clone https://github.com/johnzhou1402/claude-skills.git ~/claude-skills
+git clone https://github.com/johnzhou1402/skill-issue.git ~/skill-issue
 
 # Run setup in Claude Code
 /setup
@@ -59,19 +59,19 @@ If you prefer not to use the setup wizard:
 
 ```bash
 # Clone
-git clone https://github.com/johnzhou1402/claude-skills.git ~/claude-skills
+git clone https://github.com/johnzhou1402/skill-issue.git ~/skill-issue
 
 # Create symlinks
-ln -sf ~/claude-skills/skills/push ~/.claude/skills/push
-ln -sf ~/claude-skills/skills/push-pr ~/.claude/skills/push-pr
-ln -sf ~/claude-skills/skills/end-day ~/.claude/skills/end-day
-ln -sf ~/claude-skills/skills/trivia ~/.claude/skills/trivia
-ln -sf ~/claude-skills/skills/linear-workflow ~/.claude/skills/linear-workflow
-ln -sf ~/claude-skills/skills/checklist-manifesto ~/.claude/skills/checklist-manifesto
-ln -sf ~/claude-skills/skills/add-checklist-item ~/.claude/skills/add-checklist-item
-ln -sf ~/claude-skills/skills/setup ~/.claude/skills/setup
-ln -sf ~/claude-skills/hooks/pre-push-check.sh ~/.claude/hooks/pre-push-check.sh
-ln -sf ~/claude-skills/statusline.sh ~/.claude/statusline.sh
+ln -sf ~/skill-issue/skills/push ~/.claude/skills/push
+ln -sf ~/skill-issue/skills/push-pr ~/.claude/skills/push-pr
+ln -sf ~/skill-issue/skills/end-day ~/.claude/skills/end-day
+ln -sf ~/skill-issue/skills/trivia ~/.claude/skills/trivia
+ln -sf ~/skill-issue/skills/linear-workflow ~/.claude/skills/linear-workflow
+ln -sf ~/skill-issue/skills/checklist-manifesto ~/.claude/skills/checklist-manifesto
+ln -sf ~/skill-issue/skills/add-checklist-item ~/.claude/skills/add-checklist-item
+ln -sf ~/skill-issue/skills/setup ~/.claude/skills/setup
+ln -sf ~/skill-issue/hooks/pre-push-check.sh ~/.claude/hooks/pre-push-check.sh
+ln -sf ~/skill-issue/statusline.sh ~/.claude/statusline.sh
 
 # Create config
 mkdir -p ~/.claude/skills/end-day

@@ -1,11 +1,11 @@
 ---
 name: setup
-description: Configure claude-skills for first-time setup
+description: Configure skill-issue for first-time setup
 ---
 
 # Setup
 
-First-time setup wizard for claude-skills. Walks you through configuring each skill.
+First-time setup wizard for skill-issue. Walks you through configuring each skill.
 
 ## Usage
 
@@ -45,7 +45,7 @@ Then run /setup again.
 ### Welcome
 
 ```
-Welcome to claude-skills! 👋
+Welcome to skill-issue! 👋
 
 This wizard will help you configure your skills.
 Each skill is optional - skip any you don't need.
@@ -204,24 +204,24 @@ Write config to `~/.claude/skills/end-day/config.json`:
 
 ## Create Symlinks
 
-Set up symlinks from `~/.claude` to the claude-skills repo:
+Set up symlinks from `~/.claude` to the skill-issue repo:
 
 ```bash
 # Skills (only the public ones)
-ln -sf ~/claude-skills/skills/push-pr ~/.claude/skills/push-pr
-ln -sf ~/claude-skills/skills/push ~/.claude/skills/push
-ln -sf ~/claude-skills/skills/end-day ~/.claude/skills/end-day
-ln -sf ~/claude-skills/skills/trivia ~/.claude/skills/trivia
-ln -sf ~/claude-skills/skills/linear-workflow ~/.claude/skills/linear-workflow
-ln -sf ~/claude-skills/skills/checklist-manifesto ~/.claude/skills/checklist-manifesto
-ln -sf ~/claude-skills/skills/add-checklist-item ~/.claude/skills/add-checklist-item
-ln -sf ~/claude-skills/skills/setup ~/.claude/skills/setup
+ln -sf ~/skill-issue/skills/push-pr ~/.claude/skills/push-pr
+ln -sf ~/skill-issue/skills/push ~/.claude/skills/push
+ln -sf ~/skill-issue/skills/end-day ~/.claude/skills/end-day
+ln -sf ~/skill-issue/skills/trivia ~/.claude/skills/trivia
+ln -sf ~/skill-issue/skills/linear-workflow ~/.claude/skills/linear-workflow
+ln -sf ~/skill-issue/skills/checklist-manifesto ~/.claude/skills/checklist-manifesto
+ln -sf ~/skill-issue/skills/add-checklist-item ~/.claude/skills/add-checklist-item
+ln -sf ~/skill-issue/skills/setup ~/.claude/skills/setup
 
 # Hooks
-ln -sf ~/claude-skills/hooks/pre-push-check.sh ~/.claude/hooks/pre-push-check.sh
+ln -sf ~/skill-issue/hooks/pre-push-check.sh ~/.claude/hooks/pre-push-check.sh
 
 # Status line
-ln -sf ~/claude-skills/statusline.sh ~/.claude/statusline.sh
+ln -sf ~/skill-issue/statusline.sh ~/.claude/statusline.sh
 ```
 
 ## Final Summary
