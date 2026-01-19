@@ -30,6 +30,7 @@ blocked_patterns=(
   ".env.*"
   "*.pem"
   "*.key"
+  "*.code-workspace"
   ".claude/settings.local.json"
   ".claude/history.jsonl"
   ".claude/statsig/*"
