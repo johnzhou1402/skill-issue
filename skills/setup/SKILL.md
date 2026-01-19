@@ -224,6 +224,109 @@ ln -sf ~/skill-issue/hooks/pre-push-check.sh ~/.claude/hooks/pre-push-check.sh
 ln -sf ~/skill-issue/statusline.sh ~/.claude/statusline.sh
 ```
 
+## Configure Permissions
+
+Auto-configure `~/.claude/settings.json` so skills can run without manual approval prompts.
+
+### 1. Read existing settings
+
+```bash
+cat ~/.claude/settings.json 2>/dev/null || echo '{}'
+```
+
+### 2. Build permissions list
+
+**Core permissions (always added):**
+
+```json
+[
+  "Bash(gh pr *)",
+  "Bash(gh api *)",
+  "Bash(git log *)",
+  "Bash(date *)",
+  "Bash(ls *)",
+  "Bash(mkdir *)",
+  "Read(~/.claude/skills/**)"
+]
+```
+
+**Dynamic permissions based on user's configured directories:**
+
+For each configured path (standup_dir, reviews_dir, trivia parent dir), add Read and Write permissions:
+
+| Config Value | Permissions Added |
+|--------------|-------------------|
+| `standup_dir: ~/standups` | `Read(~/standups/**)`, `Write(~/standups/**)` |
+| `reviews_dir: ~/pr-feedback` | `Read(~/pr-feedback/**)`, `Write(~/pr-feedback/**)` |
+| `trivia_file: ~/trivia/questions.json` | `Read(~/trivia/**)`, `Write(~/trivia/**)` |
+
+**If paths share a common parent**, consolidate them. For example, if all paths are under `~/devmaxxing/`:
+
+```json
+[
+  "Read(~/devmaxxing/**)",
+  "Write(~/devmaxxing/**)"
+]
+```
+
+**If email is configured:**
+
+```json
+[
+  "Bash(curl -X POST *api.resend.com*)"
+]
+```
+
+### 3. Merge with existing settings
+
+- Read existing `~/.claude/settings.json`
+- Get existing `permissions.allow` array (or create empty array)
+- Add new permissions only if not already present (avoid duplicates)
+- Preserve all other settings (statusLine, mcpServers, etc.)
+
+### 4. Write updated settings
+
+Write the merged settings back to `~/.claude/settings.json`.
+
+**Example final permissions array:**
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr *)",
+      "Bash(gh api *)",
+      "Bash(git log *)",
+      "Bash(date *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Read(~/.claude/skills/**)",
+      "Read(~/standups/**)",
+      "Write(~/standups/**)",
+      "Read(~/pr-feedback/**)",
+      "Write(~/pr-feedback/**)",
+      "Read(~/trivia/**)",
+      "Write(~/trivia/**)",
+      "Bash(curl -X POST *api.resend.com*)"
+    ]
+  }
+}
+```
+
+### 5. Confirm to user
+
+```
+🔐 PERMISSIONS CONFIGURED
+
+Added auto-allow rules so skills run without prompts:
+  ✅ GitHub CLI (gh pr, gh api)
+  ✅ Git commands (git log)
+  ✅ File operations in your configured directories
+  ✅ Resend API (if email configured)
+
+You can review permissions in ~/.claude/settings.json
+```
+
 ## Final Summary
 
 ```
@@ -236,6 +339,7 @@ Enabled:
   ✅ Status line
   ✅ Pre-push hook
   ✅ Linear integration
+  ✅ Auto-permissions (no more manual approvals!)
   ⏭️  Email digest (skipped)
 
 Quick start:
