@@ -1,0 +1,8 @@
+{
+  "standup_dir": "~/standups",
+  "reviews_dir": "~/pr-feedback",
+  "trivia_file": "~/trivia/questions.json",
+  "resend_api_key": "",
+  "email_to": "",
+  "email_from": "onboarding@resend.dev"
+}
