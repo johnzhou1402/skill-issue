@@ -246,6 +246,10 @@ cat ~/.claude/settings.json 2>/dev/null || echo '{}'
   "Bash(date *)",
   "Bash(ls *)",
   "Bash(mkdir *)",
+  "Bash(cat *)",
+  "Bash(find *)",
+  "Bash(head *)",
+  "Bash(tail *)",
   "Read(~/.claude/skills/**)"
 ]
 ```
@@ -300,6 +304,10 @@ Write the merged settings back to `~/.claude/settings.json`.
       "Bash(date *)",
       "Bash(ls *)",
       "Bash(mkdir *)",
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(head *)",
+      "Bash(tail *)",
       "Read(~/.claude/skills/**)",
       "Read(~/standups/**)",
       "Write(~/standups/**)",
