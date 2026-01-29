@@ -64,7 +64,21 @@ This runs both OxLint and ESLint on the frontend codebase.
 - Must show 0 errors before proceeding
 - Warnings are acceptable, errors are not
 
-### 6. Run Specs for Changed Files (MANDATORY)
+### 6. Run TypeScript Typecheck on Frontend (MANDATORY)
+
+If any files in `frontend/` are changed:
+
+```bash
+cd frontend/apps/core && pnpm tsc --noEmit
+```
+
+This catches type errors like missing required props, incorrect types, etc.
+
+- **Cannot skip this step** when frontend files are changed
+- Must show 0 errors before proceeding
+- This matches the CI "TypeScript Compile" check
+
+### 7. Run Specs for Changed Files (MANDATORY)
 
 ```bash
 bin/test-changes
@@ -76,7 +90,7 @@ This runs specs related to changed files.
 - If any specs fail, stop and report failures
 - Do NOT proceed to push if specs fail
 
-### 7. Run Type Convention Check (if applicable)
+### 8. Run Type Convention Check (if applicable)
 
 If changes include GraphQL types, enums, or migrations:
 
@@ -84,7 +98,7 @@ If changes include GraphQL types, enums, or migrations:
 # Run the check-type-conventions skill
 ```
 
-### 8. Push to Origin
+### 9. Push to Origin
 
 Only after all checks pass:
 
@@ -96,7 +110,7 @@ git push origin <current-branch>
 git push --force-with-lease origin <current-branch>
 ```
 
-### 9. Report Results
+### 10. Report Results
 
 ```
 ## Push Results
@@ -107,6 +121,7 @@ Remote: origin
 ### Quality Checks
 ✅ Rubocop: 0 offenses
 ✅ Frontend lint: 0 errors
+✅ TypeScript: 0 errors
 ✅ Specs: 34 passed, 0 failed
 ✅ Type conventions: All valid
 
@@ -141,8 +156,9 @@ app/.../sign-in/page.tsx:50
 | Check branch | `git rev-parse --abbrev-ref HEAD` | No |
 | Rubocop | `bin/rubocop -A` | **NEVER** |
 | Frontend lint | `cd frontend/apps/core && pnpm lint` | **NEVER** (if frontend changed) |
+| TypeScript | `cd frontend/apps/core && pnpm tsc --noEmit` | **NEVER** (if frontend changed) |
 | Specs | `bin/test-changes` | **NEVER** |
-| Type check | `/check-type-conventions` | Auto (if applicable) |
+| Type conventions | `/check-type-conventions` | Auto (if applicable) |
 | Push | `git push origin <branch>` | No |
 
 ## Important Rules
@@ -150,5 +166,6 @@ app/.../sign-in/page.tsx:50
 1. **NEVER push without running specs** - This is the whole point of this skill
 2. **NEVER skip rubocop** - Backend code must be linted
 3. **NEVER skip frontend lint** - Frontend code must pass OxLint and ESLint
-4. **Report failures clearly** - Show exactly what failed and why
-5. **Block on any failure** - Do not push if any check fails
+4. **NEVER skip TypeScript typecheck** - Frontend code must compile without type errors
+5. **Report failures clearly** - Show exactly what failed and why
+6. **Block on any failure** - Do not push if any check fails

@@ -97,7 +97,19 @@ This runs both OxLint and ESLint on the frontend codebase.
 - Warnings are acceptable, errors are not
 - Fix any errors before continuing
 
-### 7. Run Checklist Manifesto (MANDATORY)
+### 7. Run TypeScript Typecheck (MANDATORY - if frontend files changed)
+
+**Run TypeScript compiler to check for type errors:**
+```bash
+cd frontend/apps/core && pnpm tsc --noEmit
+```
+
+This catches type errors like missing required props, incorrect types, etc.
+
+- **Do not proceed until tsc shows 0 errors**
+- This matches the CI "TypeScript Compile" check
+
+### 8. Run Checklist Manifesto (MANDATORY)
 
 **This step cannot be skipped.** Run `/checklist-manifesto` to verify:
 
@@ -113,7 +125,7 @@ This runs both OxLint and ESLint on the frontend codebase.
 2. Re-run checklist
 3. Only proceed when all checks pass
 
-### 8. Commit Changes
+### 9. Commit Changes
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -131,13 +143,13 @@ EOF
 - Focus on WHAT and WHY, not HOW
 - No period at end of first line
 
-### 9. Push Branch
+### 10. Push Branch
 
 ```bash
 git push -u origin <branch-name>
 ```
 
-### 10. Create PR
+### 11. Create PR
 
 ```bash
 gh pr create --title "<PR title>" --body "$(cat <<'EOF'
@@ -174,7 +186,7 @@ EOF
 - Bad: "Update company_type.rb to add field"
 - Good: "Fix connected companies volume to include transfers"
 
-### 11. Report Result
+### 12. Report Result
 
 ```
 PR Created Successfully
@@ -200,6 +212,7 @@ Next steps:
 | Review files | `git status && git diff --cached --name-only` | **NEVER** |
 | Rubocop | `bin/rubocop -A <files>` | **NEVER** (if backend) |
 | Frontend lint | `cd frontend/apps/core && pnpm lint` | **NEVER** (if frontend) |
+| TypeScript | `cd frontend/apps/core && pnpm tsc --noEmit` | **NEVER** (if frontend) |
 | Checklist | `/checklist-manifesto` | **NEVER** |
 | Commit | `git commit` | No |
 | Push | `git push -u origin` | No |

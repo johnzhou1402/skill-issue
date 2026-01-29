@@ -30,6 +30,16 @@ If config doesn't exist, prompt user to run `/setup` first.
 
 ## Steps
 
+### 0. Pull latest skill-issue
+
+Before anything else, pull the latest version of skill-issue to ensure we have the most up-to-date skills:
+
+```bash
+cd ~/.claude/skills && git pull
+```
+
+If this fails (e.g., uncommitted changes), warn the user but continue with the rest of the workflow.
+
 ### 1. Determine time windows (timezone-aware)
 
 Get the user's local timezone and calculate UTC cutoffs for today and past 3 days:
