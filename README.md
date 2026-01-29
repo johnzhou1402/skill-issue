@@ -25,6 +25,7 @@ The setup wizard will:
 |-------|-------------|
 | `push` | Run quality checks before pushing to current branch |
 | `push-pr` | Create a PR with quality checks and proper formatting |
+| `merge` | Safely merge PRs after verifying migrations and deploy requests |
 | `end-day` | Generate standup summaries and capture PR feedback |
 | `trivia` | Quiz yourself on your codebase from PR history |
 | `linear-workflow` | Structured workflow for Linear tickets |
@@ -64,6 +65,7 @@ git clone https://github.com/johnzhou1402/skill-issue.git ~/skill-issue
 # Create symlinks
 ln -sf ~/skill-issue/skills/push ~/.claude/skills/push
 ln -sf ~/skill-issue/skills/push-pr ~/.claude/skills/push-pr
+ln -sf ~/skill-issue/skills/merge ~/.claude/skills/merge
 ln -sf ~/skill-issue/skills/end-day ~/.claude/skills/end-day
 ln -sf ~/skill-issue/skills/trivia ~/.claude/skills/trivia
 ln -sf ~/skill-issue/skills/linear-workflow ~/.claude/skills/linear-workflow
@@ -115,6 +117,7 @@ Edit `~/.claude/skills/end-day/config.json`:
 # Pushing code
 /push                 # Quality checks + push to current branch
 /push-pr              # Quality checks + create PR
+/merge                # Verify migrations + merge PR safely
 
 # Learning
 /trivia               # Random question from your PR history
