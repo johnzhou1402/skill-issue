@@ -175,40 +175,19 @@ Also append each comment to the persistent history file `{reviews_dir}/history.m
 
 ### 7. Generate Trivia Questions
 
-For each PR, analyze the code changes to generate trivia questions about your codebase.
+For each human review comment (from step 5), generate one trivia question based on the lesson learned.
 
-**Read the actual code files touched:**
+**Transform feedback into questions:**
 
-```bash
-# Get files changed in PR
-gh pr view <number> --json files --jq '.files[].path'
+Take the lesson you extracted from each comment and turn it into a question that tests whether you've internalized the feedback.
 
-# Read key files (services, workers, models)
-```
+**Examples:**
 
-**Generate questions about:**
-
-1. **Constants & Thresholds**: Magic numbers, limits, rates
-   - "What's the GMV threshold for X?" → "$500,000"
-   - "What fee percentage does Y charge?" → "2.5%"
-
-2. **Business Logic**: What systems do and why
-   - "What happens when a company graduates from the accelerator program?"
-   - "Which worker handles X?"
-
-3. **System Relationships**: How things connect
-   - "What service does X call to do Y?"
-   - "What feature flag controls Z?"
-
-4. **Domain Knowledge**: Business concepts
-   - "What's the difference between X and Y?"
-   - "When does Z get triggered?"
-
-**Question quality rules:**
-- Questions should test understanding, not memorization of syntax
-- Answers should be concise (1-2 sentences max)
-- Focus on "why" and "what" over "how"
-- Tie to business impact when possible
+| Comment | Lesson | Trivia Question | Answer |
+|---------|--------|-----------------|--------|
+| "Use decimal, not float for money" | Financial columns need decimal precision | "What database type should be used for financial columns?" | "decimal with precision 10, scale 2 - never float (precision issues)" |
+| "This should be async" | Slack webhooks shouldn't block requests | "Should Slack webhook calls use process_inline?" | "No - remove process_inline to make it async and not block the request" |
+| "Add company_id argument" | Don't use deprecated context[:current_company] | "How should mutations get the current company?" | "Via explicit company_id argument, not context[:current_company] (deprecated)" |
 
 **Save to `{trivia_file}`:**
 
@@ -216,12 +195,13 @@ gh pr view <number> --json files --jq '.files[].path'
 {
   "questions": [
     {
-      "id": "uuid",
-      "question": "What's the GMV threshold for accelerator program graduation?",
-      "answer": "$500,000 - after this, companies pay 2.5% card fees instead of 0%",
-      "system": "accelerator_program",
+      "id": "q-2026-01-07-001",
+      "question": "What database type should be used for financial columns?",
+      "answer": "decimal with precision 10, scale 2 - never float (precision issues)",
+      "system": "database_patterns",
       "source_pr": "PR #612",
-      "source_file": "backend/app/services/accelerator_program/graduate.rb",
+      "source_file": "backend/db/migrate/xxx.rb",
+      "reviewer": "jackson",
       "added_date": "2026-01-07",
       "times_asked": 0,
       "times_correct": 0
@@ -231,10 +211,11 @@ gh pr view <number> --json files --jq '.files[].path'
 ```
 
 **Rules:**
-- Generate 2-5 questions per PR (quality over quantity)
+- One question per human comment (not per PR)
+- Only from merged PRs
+- Skip trivial comments (typos, formatting nits)
+- Question should test the principle, not the specific code
 - Don't duplicate existing questions (check by similarity)
-- Skip trivial changes (typos, formatting, deps)
-- Focus on business logic, not boilerplate
 
 ### 8. Send Email Digest (if configured)
 
