@@ -210,15 +210,18 @@ Set up symlinks from `~/.claude` to the skill-issue repo:
 # Skills (only the public ones)
 ln -sf ~/skill-issue/skills/push-pr ~/.claude/skills/push-pr
 ln -sf ~/skill-issue/skills/push ~/.claude/skills/push
+ln -sf ~/skill-issue/skills/ship ~/.claude/skills/ship
 ln -sf ~/skill-issue/skills/end-day ~/.claude/skills/end-day
 ln -sf ~/skill-issue/skills/trivia ~/.claude/skills/trivia
 ln -sf ~/skill-issue/skills/linear-workflow ~/.claude/skills/linear-workflow
 ln -sf ~/skill-issue/skills/checklist-manifesto ~/.claude/skills/checklist-manifesto
 ln -sf ~/skill-issue/skills/add-checklist-item ~/.claude/skills/add-checklist-item
+ln -sf ~/skill-issue/skills/sync-permissions ~/.claude/skills/sync-permissions
 ln -sf ~/skill-issue/skills/setup ~/.claude/skills/setup
 
 # Hooks
 ln -sf ~/skill-issue/hooks/pre-push-check.sh ~/.claude/hooks/pre-push-check.sh
+ln -sf ~/skill-issue/hooks/capture-commands.sh ~/.claude/hooks/capture-commands.sh
 
 # Status line
 ln -sf ~/skill-issue/statusline.sh ~/.claude/statusline.sh
@@ -226,37 +229,37 @@ ln -sf ~/skill-issue/statusline.sh ~/.claude/statusline.sh
 
 ## Configure Permissions
 
-Auto-configure `~/.claude/settings.json` so skills can run without manual approval prompts.
+Auto-configure `~/.claude/settings.json` from `~/skill-issue/permissions.json`.
 
-### 1. Read existing settings
+**This is the key feature:** All permissions are stored in skill-issue, so they sync across machines and persist forever.
+
+### 1. Read permissions from skill-issue
+
+```bash
+cat ~/skill-issue/permissions.json
+```
+
+This file contains all pre-approved permissions. When you want to add a new permanent permission:
+1. Edit `~/skill-issue/permissions.json`
+2. Commit and push to skill-issue
+3. Run `/setup` on other machines to sync
+
+### 2. Read existing settings
 
 ```bash
 cat ~/.claude/settings.json 2>/dev/null || echo '{}'
 ```
 
-### 2. Build permissions list
+### 3. Merge permissions
 
-**Core permissions (always added):**
-
-```json
-[
-  "Bash(gh pr *)",
-  "Bash(gh api *)",
-  "Bash(git log *)",
-  "Bash(date *)",
-  "Bash(ls *)",
-  "Bash(mkdir *)",
-  "Bash(cat *)",
-  "Bash(find *)",
-  "Bash(head *)",
-  "Bash(tail *)",
-  "Read(~/.claude/skills/**)"
-]
-```
+- Read `permissions.allow` array from `~/skill-issue/permissions.json`
+- Read existing `~/.claude/settings.json`
+- Merge permissions (add new ones, preserve existing)
+- Preserve all other settings (statusLine, mcpServers, etc.)
 
 **Dynamic permissions based on user's configured directories:**
 
-For each configured path (standup_dir, reviews_dir, trivia parent dir), add Read and Write permissions:
+For each configured path (standup_dir, reviews_dir, trivia parent dir), also add Read and Write permissions:
 
 | Config Value | Permissions Added |
 |--------------|-------------------|
@@ -264,73 +267,51 @@ For each configured path (standup_dir, reviews_dir, trivia parent dir), add Read
 | `reviews_dir: ~/pr-feedback` | `Read(~/pr-feedback/**)`, `Write(~/pr-feedback/**)` |
 | `trivia_file: ~/trivia/questions.json` | `Read(~/trivia/**)`, `Write(~/trivia/**)` |
 
-**If paths share a common parent**, consolidate them. For example, if all paths are under `~/devmaxxing/`:
+### 4. Configure command capture hook
 
-```json
-[
-  "Read(~/devmaxxing/**)",
-  "Write(~/devmaxxing/**)"
-]
-```
-
-**If email is configured:**
-
-```json
-[
-  "Bash(curl -X POST *api.resend.com*)"
-]
-```
-
-### 3. Merge with existing settings
-
-- Read existing `~/.claude/settings.json`
-- Get existing `permissions.allow` array (or create empty array)
-- Add new permissions only if not already present (avoid duplicates)
-- Preserve all other settings (statusLine, mcpServers, etc.)
-
-### 4. Write updated settings
-
-Write the merged settings back to `~/.claude/settings.json`.
-
-**Example final permissions array:**
+Add the PostToolUse hook to capture commands for `/sync-permissions`:
 
 ```json
 {
-  "permissions": {
-    "allow": [
-      "Bash(gh pr *)",
-      "Bash(gh api *)",
-      "Bash(git log *)",
-      "Bash(date *)",
-      "Bash(ls *)",
-      "Bash(mkdir *)",
-      "Bash(cat *)",
-      "Bash(find *)",
-      "Bash(head *)",
-      "Bash(tail *)",
-      "Read(~/.claude/skills/**)",
-      "Read(~/standups/**)",
-      "Write(~/standups/**)",
-      "Read(~/pr-feedback/**)",
-      "Write(~/pr-feedback/**)",
-      "Read(~/trivia/**)",
-      "Write(~/trivia/**)",
-      "Bash(curl -X POST *api.resend.com*)"
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/skill-issue/hooks/capture-commands.sh"
+          }
+        ]
+      }
     ]
   }
 }
 ```
 
-### 5. Confirm to user
+This logs every Bash command to `~/skill-issue/command-log.jsonl`. Run `/sync-permissions` periodically to review and promote new commands to permanent permissions.
+
+### 5. Write updated settings
+
+Write the merged settings back to `~/.claude/settings.json`.
+
+### 6. Confirm to user
 
 ```
-🔐 PERMISSIONS CONFIGURED
+🔐 PERMISSIONS SYNCED FROM SKILL-ISSUE
 
-Added auto-allow rules so skills run without prompts:
-  ✅ GitHub CLI (gh pr, gh api)
-  ✅ Git commands (git log)
+Merged permissions from ~/skill-issue/permissions.json:
+  ✅ Read all files
+  ✅ GitHub CLI (gh pr, gh api, gh pr create, gh pr merge)
+  ✅ Git commands (all)
+  ✅ Common shell utilities
+  ✅ Package managers (npm, pnpm, yarn, cargo)
   ✅ File operations in your configured directories
-  ✅ Resend API (if email configured)
+  ✅ Command capture hook enabled
+
+To add new permanent permissions:
+  Option 1: Run /sync-permissions to review captured commands
+  Option 2: Edit ~/skill-issue/permissions.json directly
 
 You can review permissions in ~/.claude/settings.json
 ```
@@ -347,14 +328,20 @@ Enabled:
   ✅ Status line
   ✅ Pre-push hook
   ✅ Linear integration
-  ✅ Auto-permissions (no more manual approvals!)
+  ✅ Permissions synced from skill-issue (no more manual approvals!)
   ⏭️  Email digest (skipped)
 
 Quick start:
-  /end-day        - Generate today's standup
-  /trivia         - Quiz yourself
-  /push           - Push with quality checks
-  /push-pr        - Create a PR
+  /ship              - Ship changes (branch + PR + merge)
+  /push              - Push with quality checks
+  /push-pr           - Create a PR (no merge)
+  /sync-permissions  - Review & promote captured commands
+  /end-day           - Generate today's standup
+  /trivia            - Quiz yourself
+
+Adding new permissions:
+  Commands are auto-captured. Run /sync-permissions to review and promote.
+  Or edit ~/skill-issue/permissions.json directly.
 
 Restart Claude Code to activate the status line.
 
